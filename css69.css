@@ -1,0 +1,772 @@
+/* General Styles */
+        :root {
+            --bg-color: #121212; /* Deeper, richer dark background */
+            --text-color: #e0e0e0;
+            --primary-color: #333333; /* Darker, more matte grey for elements */
+            --secondary-color: #2a2a2a; /* Slightly lighter than primary for contrast */
+            --accent-color: #007acc; /* A muted, deep blue for highlights */
+            --border-color: #444444;
+            --shadow-color: rgba(0, 0, 0, 0.6); /* Deeper shadows */
+            --transition-speed: 0.4s;
+            --glow-color: rgba(0, 122, 204, 0.4); /* Muted blue glow */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            background-color: var(--bg-color); /* Solid background for the body */
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll from animations */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 1200px; /* Max width for content */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px var(--shadow-color); /* Deeper shadow for the app container */
+            border-radius: 12px; /* Slightly more rounded corners for the overall app */
+            position: relative;
+            overflow: hidden; /* For page transitions */
+            opacity: 0; /* Initially hidden for smooth entrance */
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        #app.show-app {
+            opacity: 1;
+        }
+
+        .page-view {
+            width: 100%;
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 30px; /* Increased padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Push footer to bottom */
+            opacity: 0;
+            transform: translateY(20px); /* Slight slide-up effect */
+            transition: opacity var(--transition-speed) ease-in-out, transform var(--transition-speed) ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            /* Dot background applied to the page-view itself */
+            background-color: var(--bg-color); /* Base color for the dots */
+            background-image: radial-gradient(circle at center, #3a3a3a 1px, transparent 1px), radial-gradient(circle at center, #3a3a3a 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .page-view.active {
+            opacity: 1;
+            transform: translateY(0);
+            position: relative; /* Bring active page to front for interaction */
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Slightly darker overlay */
+            backdrop-filter: blur(5px); /* Subtle blur effect */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            padding: 40px;
+            border-radius: 12px; /* More rounded */
+            box-shadow: 0 8px 25px var(--shadow-color); /* Deeper shadow */
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            transform: translateY(-30px) scale(0.95); /* Initial state for pop-in */
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease; /* Bouncy transition */
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .modal-content h2 {
+            color: var(--text-color);
+            margin-bottom: 25px; /* More space */
+            font-weight: 500;
+        }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .modal-content input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 14px; /* Larger padding */
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px; /* More rounded */
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modal-content input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.3);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 14px 30px; /* Larger padding */
+            border-radius: 8px; /* More rounded */
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        button:hover::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 122, 204, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Home Page Specifics */
+        #homePage {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 30px; /* Increased gap */
+            align-items: center;
+            justify-items: center;
+            text-align: center;
+        }
+
+        #homePage header {
+            grid-column: 1 / -1;
+            padding: 60px 20px 40px; /* Adjusted padding */
+            position: relative;
+            width: 100%;
+        }
+
+        #animatedTitle {
+            font-size: 4rem; /* Larger title */
+            color: var(--text-color);
+            margin-bottom: 25px;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 0.15em solid var(--text-color);
+            animation: blink-caret 0.75s step-end infinite;
+            font-weight: 700; /* Bolder */
+            letter-spacing: -1px; /* Tighter letter spacing */
+        }
+
+        .typing-effect {
+            width: 0;
+            animation: typing 2s steps(100, end) forwards;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--text-color); }
+        }
+
+        .description-container {
+            background-color: var(--secondary-color);
+            padding: 30px 40px; /* Increased padding */
+            border-radius: 12px; /* More rounded */
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 18px var(--shadow-color); /* Deeper shadow */
+            max-width: 650px; /* Slightly wider */
+            margin: 0 auto;
+        }
+
+        .description-container::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0%, var(--glow-color) 20%, transparent 40%, transparent 60%, var(--glow-color) 80%, transparent 100%);
+            animation: rotateGlow 8s linear infinite;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            opacity: 0.7; /* Subtler glow */
+        }
+
+        .description-container p {
+            position: relative;
+            z-index: 1;
+            font-size: 1.3rem; /* Larger font */
+            line-height: 1.7; /* Better readability */
+            color: rgba(255, 255, 255, 0.9); /* Slightly brighter text */
+            font-weight: 300; /* Lighter weight */
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1.2); }
+        }
+
+        .description-container::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background-color: var(--secondary-color);
+            border-radius: 10px; /* Match inner radius */
+            z-index: 0;
+        }
+
+        .ad-left, .ad-right {
+            width: 100%;
+            height: 300px;
+            background-color: var(--primary-color); /* Ads blend with primary color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px; /* More rounded */
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow-color); /* Deeper shadow */
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+
+        .ad-left iframe, .ad-right iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex; /* To center placeholder text if any */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .center-content {
+            grid-column: 2 / 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 60px 0; /* Increased padding */
+        }
+
+        #startButton {
+            padding: 18px 50px; /* Larger button */
+            font-size: 1.6rem; /* Larger font */
+            border-radius: 10px; /* More rounded */
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 6px 20px rgba(0, 122, 204, 0.4); /* Stronger accent shadow */
+            font-weight: 600;
+        }
+
+        #startButton:hover {
+            background-color: #006bb3; /* Slightly darker accent on hover */
+            box-shadow: 0 8px 25px rgba(0, 122, 204, 0.6);
+            transform: translateY(-4px);
+        }
+
+        /* Footer Styles */
+        .main-footer {
+            grid-column: 1 / -1;
+            background-color: var(--primary-color); /* Footer matches primary color */
+            color: var(--text-color);
+            padding: 20px 30px; /* Increased padding */
+            text-align: center;
+            font-size: 0.95rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px; /* Increased gap */
+            border-radius: 0 0 12px 12px; /* Rounded bottom corners for the app container */
+            margin-top: auto; /* Push to bottom */
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2); /* Subtle top shadow */
+        }
+
+        .main-footer nav a {
+            color: rgba(255, 255, 255, 0.7); /* Muted link color */
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.2s ease;
+            font-weight: 300;
+        }
+
+        .main-footer nav a:hover {
+            color: var(--accent-color);
+        }
+
+        .status-badge {
+            background-color: var(--secondary-color);
+            padding: 8px 15px; /* Larger badge */
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+        }
+
+        .status-badge::before {
+            content: '●';
+            color: #ffc107; /* Yellow for loading/unknown */
+            font-size: 1.3em;
+            line-height: 1;
+        }
+        .status-badge.online::before { color: #28a745; /* Green */ }
+        .status-badge.offline::before { color: #dc3545; /* Red */ }
+
+        /* Games Page Specifics */
+        #gamesPage header {
+            text-align: center;
+            padding: 40px 20px; /* Adjusted padding */
+            font-size: 2.5rem; /* Larger header */
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Larger min-width for cards */
+            gap: 25px; /* Increased gap */
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        .game-card {
+            background-color: var(--secondary-color);
+            border-radius: 12px; /* More rounded */
+            overflow: hidden;
+            box-shadow: 0 6px 20px var(--shadow-color); /* Deeper shadow */
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            padding-bottom: 75%; /* Maintain aspect ratio (4:3) for thumbnails */
+            border: 1px solid var(--border-color); /* Subtle border */
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7); /* Stronger shadow on hover */
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            transition: transform 0.4s ease;
+        }
+
+        .game-card:hover img {
+            transform: scale(1.1); /* More pronounced image zoom */
+        }
+
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%); /* Stronger gradient */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px; /* More padding */
+            box-sizing: border-box;
+            z-index: 1;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover .game-overlay {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.1) 100%);
+        }
+
+        .game-title {
+            font-size: 1.3rem; /* Larger title */
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle text shadow */
+        }
+
+        .game-credits {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .game-credits a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .game-credits a:hover {
+            color: #0099ff;
+            text-decoration: underline;
+        }
+
+        #loadingMoreGames {
+            color: var(--text-color);
+            padding: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* Game Fullscreen Modal */
+        .game-modal-content {
+            background-color: var(--bg-color);
+            padding: 25px; /* Adjusted padding */
+            border-radius: 15px; /* Even more rounded */
+            max-width: 98%; /* Slightly larger */
+            width: 98%;
+            height: 98%;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9); /* Very deep shadow */
+        }
+
+        .game-modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 2rem; /* Larger title */
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .game-modal-content .game-credits {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .game-area {
+            display: flex;
+            flex-grow: 1;
+            gap: 20px; /* Increased gap */
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .game-ad-left, .game-ad-right {
+            flex-shrink: 0;
+            width: 180px; /* Slightly wider ad width */
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .game-ad-left iframe, .game-ad-right iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .game-iframe-wrapper {
+            flex-grow: 1;
+            background-color: #000; /* Solid black for game area */
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--border-color); /* Thicker border */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5); /* Inner shadow for depth */
+            position: relative; /* For loading indicator */
+        }
+
+        #gameIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        #loadingIndicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-color);
+            font-size: 1.2rem;
+            z-index: 2;
+            display: none; /* Hidden by default */
+        }
+
+        .game-controller-panel {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Increased gap */
+            padding: 15px 0;
+            flex-wrap: wrap;
+            background-color: var(--secondary-color); /* Panel background */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+        }
+
+        .game-controller-panel button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-controller-panel button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 122, 204, 0.3);
+        }
+
+        .game-modal-footer {
+            background-color: var(--primary-color); /* Footer matches primary color */
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 0 0 12px 12px; /* Rounded bottom corners */
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        #statsEl {
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 10px;
+        }
+
+        /* Keyframe animations */
+        @keyframes slideInGreeting {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOutGreeting {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 900px) {
+            #homePage {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto 1fr auto;
+                gap: 25px;
+            }
+
+            .ad-left, .ad-right {
+                grid-column: 1 / -1;
+                height: 200px; /* Slightly smaller ads on medium screens */
+            }
+
+            .center-content {
+                grid-column: 1 / -1;
+            }
+
+            #animatedTitle {
+                font-size: 3.2rem;
+            }
+
+            .description-container {
+                padding: 25px 30px;
+            }
+
+            .game-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+                padding: 15px;
+            }
+
+            .game-modal-content {
+                padding: 20px;
+            }
+
+            .game-area {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .game-ad-left, .game-ad-right {
+                width: 100%;
+                height: 100px; /* Smaller ads in game modal on mobile */
+            }
+
+            .game-controller-panel {
+                flex-direction: row; /* Keep row for wider mobile */
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .game-controller-panel button {
+                flex: 1 1 auto; /* Allow buttons to grow/shrink */
+                min-width: 120px; /* Ensure minimum width */
+            }
+        }
+
+        @media (max-width: 600px) {
+            #animatedTitle {
+                font-size: 2.5rem;
+            }
+
+            .description-container p {
+                font-size: 1.1rem;
+            }
+
+            #startButton {
+                padding: 15px 35px;
+                font-size: 1.4rem;
+            }
+
+            .main-footer {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .main-footer nav a {
+                margin: 5px 8px;
+            }
+
+            .game-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                padding: 15px;
+            }
+
+            .game-modal-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .game-controller-panel {
+                flex-direction: column; /* Stack buttons vertically on small phones */
+                gap: 8px;
+            }
+
+            .game-controller-panel button {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+
+        /* Report Modal Specific Styles */
+        #reportModal .modal-content {
+            max-width: 600px;
+        }
+
+        #reportModal textarea {
+            width: calc(100% - 20px);
+            height: 120px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        #reportModal textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.3);
+        }
+
+        #reportModal .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
